@@ -1,0 +1,5 @@
+url: 'https://github.com/ardaacala/TilkiResourcePack/releases/download/v1.0.0/TilkiCraft-ResourcePack.zip'
+sha1: 'a889df66d4547671ca716d34f904c4a0d51d6e1d'
+required: true
+delay-ticks: 10
+prompt: 'TilkiCraft: silahlar, giriş logosu, HUD ve rütbe rozetleri tek pakette.'

@@ -1,0 +1,12 @@
+name: TilkiResourcePack
+version: 1.0.0
+main: com.tilkicraft.pack.TilkiResourcePack
+api-version: '1.21'
+loadbefore: [CombatGuns, TilkiLoginScreen, TilkiStatsHUD, TilkiTags]
+commands:
+  tilkipack:
+    description: Birleşik paket ayarlarını yenile
+    permission: tilkipack.admin
+permissions:
+  tilkipack.admin:
+    default: op
