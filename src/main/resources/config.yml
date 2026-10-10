@@ -1,5 +1,17 @@
-url: 'https://github.com/ardaacala/TilkiResourcePack/releases/download/v1.0.1/TilkiCraft-ResourcePack.zip'
-sha1: '46e69aec4adaa31c756f679a78b90016681c7ce2'
+url: 'https://github.com/ardaacala/TilkiResourcePack/releases/download/v1.0.2/TilkiCraft-ResourcePack.zip'
+sha1: '70826269ac773197fb2f919b9c5e1e31659cf1fb'
 required: true
 delay-ticks: 10
 prompt: 'TilkiCraft: silahlar, giriş logosu, HUD ve rütbe rozetleri tek pakette.'
+
+font-style: modern
+profiles:
+  modern:
+    url: 'https://github.com/ardaacala/TilkiResourcePack/releases/download/v1.0.2/TilkiCraft-ResourcePack.zip'
+    sha1: '70826269ac773197fb2f919b9c5e1e31659cf1fb'
+  classic:
+    url: 'https://github.com/ardaacala/TilkiResourcePack/releases/download/v1.0.2/TilkiCraft-ResourcePack-classic.zip'
+    sha1: 'ed3665e3d4f9f23c0d396fe77118b292681575d0'
+  fantasy:
+    url: 'https://github.com/ardaacala/TilkiResourcePack/releases/download/v1.0.2/TilkiCraft-ResourcePack-fantasy.zip'
+    sha1: 'efc4921ddda171eb706bd435a1992da763d44616'

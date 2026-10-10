@@ -18,10 +18,21 @@ HUD çerçevesi metne göre 128, 144, 160 veya 192 piksel genişliğinde, 13 sat
 
 ## Doğrulama
 
-Güncellenen üç eklenti derlenmiştir; 15 birim testi geçmiştir. Diğer iki eklenti önceki güncellemenin derlenmiş sürümleridir. Ortak ZIP 416 dosya ve dört font referansı içerir. Canlı Minecraft istemcisinde görüntü ve eklentiler arası çalışma ayrıca denenmelidir.
+Güncellenen üç eklenti derlenmiştir; 20 birim testi geçmiştir. Diğer iki eklenti önceki güncellemenin derlenmiş sürümleridir. Ortak ZIP 1308 dosya, dört modül fontu ve seçilen metin fontu referansı içerir. Canlı Minecraft istemcisinde görüntü ve eklentiler arası çalışma ayrıca denenmelidir.
 
 ## Ada seviyesi ve beyaz isimler
 
 Chat, TAB ve oyuncu üzerinde seviye + rozet + beyaz isim gösterilir. PlaceholderAPI ve SuperiorSkyblock2 kurulu olmalıdır. Varsayılan `%superior_island_level_format%` alanı SuperiorSkyblock tarafından sağlanır: https://wiki.bg-software.com/superiorskyblock/overview/placeholders/island-placeholders . Başka ada eklentisi kullanılırsa TilkiTags ve TilkiStatsHUD config dosyalarında `island-level.placeholder` değiştirilir. Çözülmeyen placeholder veya adası olmayan oyuncu için 0 gösterilir. HUD seviye satırı artık ada seviyesidir.
 
 Eski TilkiTags, TilkiStatsHUD ve TilkiResourcePack JAR sürümlerini kaldırın; klasörlerini silmeyin. Resmî eski kaynak paketi adresleri otomatik güncellenir. Tilki rozeti artık `Tilki` yazılıdır; bütün rozetler kalın piksel yazı kullanır.
+
+## 1.0.2 — HD fontlar ve süslemeli çerçeveler
+
+TilkiStatsHUD ve TilkiTags 1.3.0 ile kullanılır. Rozetler 3 kat çözünürlükte, yumuşatılmış yazı ile çizilir. HUD/TAB ahşap, metal, altın ve tilki başı süslemeli HD çerçeve kullanır. 4 kat kaynak çözünürlüğü, atlas sınırını aşmayan 885 parçaya bölünür. HUD altındaki TilkiCraft • Skyblock satırı seçili fonta göre ortalanır. Paper sayı gizleme API'si ve Spigot'un paket içi CraftObjective metodu üzerinden boş sayı formatı desteklenir. Desteklenmeyen sunucuda açık uyarı yazılır.
+
+Genel oyun fontları (Türkçe destekli, SIL OFL lisanslı Noto):
+- modern: Noto Sans; varsayılan.
+- classic: Noto Sans Mono.
+- fantasy: Noto Serif.
+
+Yönetici komutu: `/tilkipack font modern`, `/tilkipack font classic` veya `/tilkipack font fantasy`. Seçim sunucu genelindedir, config dosyasına kaydedilir ve oyunculara seçilen tek birleşik paket gönderilir. Diğer iki font paketi otomatik olarak ayrıca indirilmez. `/tilkipack reload` ayarları yeniden okur. Çerçeve ve fontların görünümü GUI ölçeğine bağlıdır; küçük pencerelerde TAB kırpılabilir. Canlı istemci kontrolü henüz yapılmamıştır.

@@ -17,10 +17,20 @@ class BuildCombinedPack {
     } else { byte[] old=files.putIfAbsent(name,bytes);if(old!=null&&!Arrays.equals(old,bytes))throw new IllegalStateException("Conflicting asset: "+name); }
    }}
   }
-  for(var font:fonts.entrySet()) { if(font.getValue().size()!=4)throw new IllegalStateException("Expected all four font references");JsonObject object=new JsonObject();object.add("providers",font.getValue());files.put(font.getKey(),object.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8)); }
+  for(var font:fonts.entrySet()) if(font.getValue().size()!=5)throw new IllegalStateException("Expected four modules and one text font reference");
   files.put("pack.mcmeta","{\"pack\":{\"pack_format\":46,\"description\":\"TilkiCraft - Weapons, Login, HUD, Tags | 1.21.4\"}}".getBytes(java.nio.charset.StandardCharsets.UTF_8));
-  Files.createDirectories(Path.of("dist"));Path zip=Path.of("dist/TilkiCraft-ResourcePack.zip");
-  try(var output=new ZipOutputStream(Files.newOutputStream(zip))) { for(var file:files.entrySet()) {var entry=new ZipEntry(file.getKey());entry.setTime(0);output.putNextEntry(entry);output.write(file.getValue());output.closeEntry();} }
-  String hash=HexFormat.of().formatHex(MessageDigest.getInstance("SHA-1").digest(Files.readAllBytes(zip)));Files.writeString(Path.of("dist/resourcepack-sha1.txt"),hash+"\n");System.out.println(files.size()+" assets; SHA1 "+hash);
+  Files.createDirectories(Path.of("dist"));JsonObject profiles=new JsonObject();
+  for(String style:List.of("modern","classic","fantasy")) {
+   for(var font:fonts.entrySet()) {
+    JsonArray providers=new JsonArray();for(JsonElement original:font.getValue()) {JsonObject p=original.deepCopy().getAsJsonObject();if(p.has("id")&&p.get("id").getAsString().startsWith("tilkiinterface:text_"))p.addProperty("id","tilkiinterface:text_"+style);providers.add(p);}
+    JsonObject object=new JsonObject();object.add("providers",providers);files.put(font.getKey(),object.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
+   }
+   String name="TilkiCraft-ResourcePack"+(style.equals("modern")?"":"-"+style)+".zip";Path zip=Path.of("dist",name);
+   try(var output=new ZipOutputStream(Files.newOutputStream(zip))) { for(var file:files.entrySet()) {var entry=new ZipEntry(file.getKey());entry.setTime(0);output.putNextEntry(entry);output.write(file.getValue());output.closeEntry();} }
+   String hash=HexFormat.of().formatHex(MessageDigest.getInstance("SHA-1").digest(Files.readAllBytes(zip)));
+   JsonObject profile=new JsonObject();profile.addProperty("url","https://github.com/ardaacala/TilkiResourcePack/releases/download/v1.0.2/"+name);profile.addProperty("sha1",hash);profiles.add(style,profile);
+   if(style.equals("modern"))Files.writeString(Path.of("dist/resourcepack-sha1.txt"),hash+"\n");System.out.println(style+": "+files.size()+" assets; SHA1 "+hash);
+  }
+  Files.writeString(Path.of("dist/font-profiles.json"),profiles.toString());
  }
 }

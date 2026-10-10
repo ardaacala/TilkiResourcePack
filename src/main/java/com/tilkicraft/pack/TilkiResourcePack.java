@@ -10,7 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class TilkiResourcePack extends JavaPlugin implements Listener,CommandExecutor {
     public static final UUID PACK_ID=UUID.fromString("2c17449c-7006-4595-ae41-bef76e22ea31");
     private final PackSessions sessions=new PackSessions();
-    private String url,prompt;
+    private String url,prompt,fontStyle="modern";
     private byte[] hash;
     private boolean required;
     private long delay;
@@ -22,17 +22,25 @@ public final class TilkiResourcePack extends JavaPlugin implements Listener,Comm
         for(Player player:Bukkit.getOnlinePlayers()) request(player);
     }
     private void settings() {
-        if(getConfig().getString("url","").equals("https://github.com/ardaacala/TilkiResourcePack/releases/download/v1.0.0/TilkiCraft-ResourcePack.zip")) {
-            getConfig().set("url","https://github.com/ardaacala/TilkiResourcePack/releases/download/v1.0.1/TilkiCraft-ResourcePack.zip");
-            getConfig().set("sha1","46e69aec4adaa31c756f679a78b90016681c7ce2");saveConfig();
+        if(getConfig().getString("url","").startsWith("https://github.com/ardaacala/TilkiResourcePack/releases/download/") && !getConfig().getString("url","").contains("/v1.0.2/")) {
+            getConfig().set("url","https://github.com/ardaacala/TilkiResourcePack/releases/download/v1.0.2/TilkiCraft-ResourcePack.zip");
+            getConfig().set("sha1","70826269ac773197fb2f919b9c5e1e31659cf1fb");saveConfig();
         }
+        fontStyle=getConfig().getString("font-style","modern").toLowerCase(Locale.ROOT);
+        if(!Set.of("modern","classic","fantasy").contains(fontStyle))throw new IllegalArgumentException("Unknown font-style");
         String candidate=getConfig().getString("url","");
-        byte[] digest=HexFormat.of().parseHex(getConfig().getString("sha1",""));
+        String digestText=getConfig().getString("sha1","");
+        if(candidate.startsWith("https://github.com/ardaacala/TilkiResourcePack/releases/download/")) {
+            candidate=getConfig().getString("profiles."+fontStyle+".url",candidate);
+            digestText=getConfig().getString("profiles."+fontStyle+".sha1",digestText);
+        }
+        byte[] digest=HexFormat.of().parseHex(digestText);
         if(!candidate.startsWith("https://")||digest.length!=20) throw new IllegalArgumentException("Combined pack requires HTTPS URL and 40-character SHA1");
         url=candidate;hash=digest;prompt=getConfig().getString("prompt","TilkiCraft");
         required=getConfig().getBoolean("required",true);delay=Math.max(1,getConfig().getLong("delay-ticks",10));
     }
     public boolean isLoaded(UUID playerId) { return sessions.loaded(playerId); }
+    public String getFontStyle() { return fontStyle; }
     private void request(Player player) {
         UUID id=player.getUniqueId();var session=sessions.begin(id);
         if(session==null)return;
@@ -51,6 +59,11 @@ public final class TilkiResourcePack extends JavaPlugin implements Listener,Comm
     @Override public boolean onCommand(CommandSender sender,Command command,String label,String[] args) {
         if(!sender.hasPermission("tilkipack.admin"))return true;
         reloadConfig();
+        if(args.length==2 && args[0].equalsIgnoreCase("font")) {
+            String style=args[1].toLowerCase(Locale.ROOT);
+            if(!Set.of("modern","classic","fantasy").contains(style)) { sender.sendMessage("/tilkipack font modern|classic|fantasy");return true; }
+            getConfig().set("font-style",style);saveConfig();
+        }
         try { settings(); } catch(IllegalArgumentException ex) { sender.sendMessage("Paket ayarı hatalı: "+ex.getMessage());return true; }
         sessions.clear();for(Player player:Bukkit.getOnlinePlayers())request(player);
         sender.sendMessage("Birleşik paket ayarları yenilendi; oyunculara tek paket gönderildi.");return true;
