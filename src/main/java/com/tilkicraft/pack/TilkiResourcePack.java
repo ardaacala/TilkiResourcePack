@@ -22,6 +22,10 @@ public final class TilkiResourcePack extends JavaPlugin implements Listener,Comm
         for(Player player:Bukkit.getOnlinePlayers()) request(player);
     }
     private void settings() {
+        if(getConfig().getString("url","").equals("https://github.com/ardaacala/TilkiResourcePack/releases/download/v1.0.0/TilkiCraft-ResourcePack.zip")) {
+            getConfig().set("url","https://github.com/ardaacala/TilkiResourcePack/releases/download/v1.0.1/TilkiCraft-ResourcePack.zip");
+            getConfig().set("sha1","46e69aec4adaa31c756f679a78b90016681c7ce2");saveConfig();
+        }
         String candidate=getConfig().getString("url","");
         byte[] digest=HexFormat.of().parseHex(getConfig().getString("sha1",""));
         if(!candidate.startsWith("https://")||digest.length!=20) throw new IllegalArgumentException("Combined pack requires HTTPS URL and 40-character SHA1");

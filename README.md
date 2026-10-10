@@ -10,12 +10,18 @@ Spigot 1.21.4 / Java 21. CombatGuns, TilkiLoginScreen, TilkiStatsHUD ve TilkiTag
 4. Sunucuyu yeniden başlatın. GitHub ZIP adresi ve SHA1 hazırdır, ayrıca paket ZIP'ini sunucuya kopyalamanız gerekmez.
 5. server.properties içindeki resource-pack alanında eski bir paket varsa boşaltın. Başka paket gönderen eklentiler de ayrı indirme isteği oluşturabilir.
 
-Sağ HUD turuncu köşeli çerçeve ve üstte TilkiCraft logosu içerir. TAB üstünde logo, turuncu ayraçlar; altında oyuncu, ping ve rütbe bulunur. TilkiTags oyuncu isimleri ve rozetlerini yönetmeye devam eder. TAB yerleşimi Minecraft'ın doğal oyuncu listesine bağlıdır; referanstaki sabit dört sütunlu dış çerçeve birebir uygulanmamıştır.
+Sağ HUD turuncu köşeli çerçeve ve üstte TilkiCraft logosu içerir. TAB üstünde logo, turuncu ayraçlar; altında oyuncu, ping ve rütbe bulunur. TilkiTags oyuncu isimleri ve rozetlerini yönetmeye devam eder. TAB dış çerçevesi görünür oyuncu sayısına ve isim genişliğine göre seçilir. Minecraft doğal sütun yerleşimini korur; çok küçük pencereler veya yüksek GUI ölçeği kenarları kırpabilir.
 
-HUD çerçevesi 208 piksel genişliğinde, 15 satır içindir. Çok uzun özel satırlar sınırları aşabilir. `sidebar.frame: false` ve `tab.enabled: false` ile kapatılabilir. `tab.header` ve `tab.footer` satır listeleri özelleştirilebilir; `{tab-logo}`, `{online}`, `{max}`, `{player}`, `{ping}`, `{rank}` kullanılabilir.
+HUD çerçevesi metne göre 128, 144, 160 veya 192 piksel genişliğinde, 13 satır içindir. Çok uzun özel satırlar sınırları aşabilir. Ölüm/öldürme satırları kaldırılmıştır; istatistik simgeleri ve yalnız tilki maskotu eklenmiştir. `sidebar.frame: false` ve `tab.enabled: false` ile kapatılabilir. `tab.header` ve `tab.footer` satır listeleri özelleştirilebilir; `{tab-logo}`, `{online}`, `{max}`, `{player}`, `{ping}`, `{rank}` kullanılabilir.
 
 `/tilkipack reload` ortak paketi yeniden gönderir. `/tilkiui reload` ve `/tilkitags reload`, ortak paket etkin olduğunda yeni indirme istemez.
 
 ## Doğrulama
 
-Beş eklenti derlenmiştir; toplam 22 birim testi geçmiştir. Ortak ZIP 195 dosya ve dört font referansı içerir. Canlı Minecraft istemcisinde görüntü ve eklentiler arası çalışma ayrıca denenmelidir.
+Güncellenen üç eklenti derlenmiştir; 15 birim testi geçmiştir. Diğer iki eklenti önceki güncellemenin derlenmiş sürümleridir. Ortak ZIP 416 dosya ve dört font referansı içerir. Canlı Minecraft istemcisinde görüntü ve eklentiler arası çalışma ayrıca denenmelidir.
+
+## Ada seviyesi ve beyaz isimler
+
+Chat, TAB ve oyuncu üzerinde seviye + rozet + beyaz isim gösterilir. PlaceholderAPI ve SuperiorSkyblock2 kurulu olmalıdır. Varsayılan `%superior_island_level_format%` alanı SuperiorSkyblock tarafından sağlanır: https://wiki.bg-software.com/superiorskyblock/overview/placeholders/island-placeholders . Başka ada eklentisi kullanılırsa TilkiTags ve TilkiStatsHUD config dosyalarında `island-level.placeholder` değiştirilir. Çözülmeyen placeholder veya adası olmayan oyuncu için 0 gösterilir. HUD seviye satırı artık ada seviyesidir.
+
+Eski TilkiTags, TilkiStatsHUD ve TilkiResourcePack JAR sürümlerini kaldırın; klasörlerini silmeyin. Resmî eski kaynak paketi adresleri otomatik güncellenir. Tilki rozeti artık `Tilki` yazılıdır; bütün rozetler kalın piksel yazı kullanır.
