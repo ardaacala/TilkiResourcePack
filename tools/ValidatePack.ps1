@@ -17,6 +17,29 @@ try {
   if($definition.providers.Count -ne 4) { throw 'Missing merged module font reference' }
   if($definition.providers | Where-Object {$_.id -like 'tilkiinterface:text_*'}) { throw 'Global font override remains' }
  }
+ $asciiEntry=$zip.GetEntry('assets/minecraft/textures/font/ascii.png')
+ if(!$asciiEntry) { throw 'Missing Minecraft ASCII atlas' }
+ $sourceHash=(Get-FileHash (Join-Path $root 'overlay/assets/minecraft/textures/font/ascii.png') -Algorithm SHA256).Hash
+ $asciiStream=$asciiEntry.Open()
+ try {
+  $bytes=[IO.MemoryStream]::new()
+  try { $asciiStream.CopyTo($bytes); $sha=[Security.Cryptography.SHA256]::Create(); try { $atlasHash=[BitConverter]::ToString($sha.ComputeHash($bytes.ToArray())).Replace('-','') } finally { $sha.Dispose() } }
+  finally { $bytes.Dispose() }
+  if($atlasHash -ne $sourceHash) { throw 'ASCII atlas differs from the selected source' }
+ } finally { $asciiStream.Dispose() }
+ $asciiStream=$asciiEntry.Open();$ascii=[Drawing.Bitmap]::new($asciiStream)
+ try {
+  if($ascii.Width -ne 256 -or $ascii.Height -ne 256) { throw 'ASCII atlas must be 16 by 16 cells of 16 pixels' }
+  # The 1.21.4 vanilla mapping uses the code point as the cell index.
+  # Cover player names, chat, menu labels, digits and punctuation.
+  for($code=33;$code -le 126;$code++) {
+   $x=($code%16)*16;$y=[int][Math]::Floor($code/16)*16;$visible=$false
+   for($yy=$y;$yy -lt $y+16 -and !$visible;$yy++) {
+    for($xx=$x;$xx -lt $x+16;$xx++) { if($ascii.GetPixel($xx,$yy).A -gt 0) { $visible=$true;break } }
+   }
+   if(!$visible) { throw "Empty printable ASCII glyph: $code" }
+  }
+ } finally { $ascii.Dispose();$asciiStream.Dispose() }
  $default=Read-Json $zip.GetEntry('assets/minecraft/font/default.json')
  foreach($reference in $default.providers) {
   $parts=$reference.id.Split(':')
@@ -34,11 +57,12 @@ try {
    foreach($character in $characters) { if($seen.ContainsKey($character)) { throw "Overlapping glyph: $character" };$seen[$character]=$true }
   }
  }
- if(!($zip.Entries.FullName | Where-Object { $_ -like 'assets/tilkiinterface/textures/font/hd/*' }) -or !$zip.GetEntry('assets/tilkiinterface/textures/font/mascot.png')) { throw 'Missing HD tiles or fox mascot' }
- if($zip.Entries.FullName | Where-Object { $_ -like 'assets/tilkiinterface/font/fonts/*' -or $_ -like 'assets/tilkiinterface/font/text_*' }) { throw 'Legacy font files remain' }
+ if(!$zip.GetEntry('assets/tilkiinterface/textures/font/mascot.png') -or !$zip.GetEntry('assets/tilkiinterface/textures/font/tab_logo.png')) { throw 'HUD or TAB logo missing' }
+ if($zip.Entries.FullName | Where-Object { $_ -like 'assets/tilkiinterface/textures/font/hd/*' -or $_ -like 'assets/tilkiinterface/textures/font/sidebar_frame*' -or $_ -match 'assets/tilkiinterface/textures/font/tab_[0-9]' }) { throw 'Frame texture remains' }
+ if($zip.Entries.FullName | Where-Object { $_ -like '*.ttf' -or $_ -like 'assets/tilkiinterface/font/text_*' }) { throw 'Legacy font files remain' }
 } finally { $zip.Dispose() }
 $size=(Get-Item $path).Length
 if($size -gt 2MB) { throw "Combined pack grew beyond 2 MB: $size bytes" }
 $hash=(Get-FileHash $path -Algorithm SHA1).Hash.ToLowerInvariant()
 if(!([IO.File]::ReadAllText((Join-Path $root 'src/main/resources/config.yml'))).Contains($hash)) { throw 'Combined config SHA1 mismatch' }
-Write-Output "VALID: four module fonts, no global text font, atlas-safe compact frames, ZIP $size bytes and SHA1."
+Write-Output "VALID: complete ASCII atlas, four module fonts, no TTF or frame assets, both logos, ZIP $size bytes and SHA1."

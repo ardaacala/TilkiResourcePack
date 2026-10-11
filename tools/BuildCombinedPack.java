@@ -22,6 +22,12 @@ class BuildCombinedPack {
    JsonObject object=new JsonObject();object.add("providers",font.getValue());
    files.put(font.getKey(),object.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
   }
+  // Keep the four current modules intact; the font experiment contributes only
+  // the vanilla ASCII atlas override, never its old HUD, tag or TTF assets.
+  Path ascii=Path.of("overlay/assets/minecraft/textures/font/ascii.png");
+  String asciiPath="assets/minecraft/textures/font/ascii.png";
+  if(files.containsKey(asciiPath))throw new IllegalStateException("Module already supplies "+asciiPath);
+  files.put(asciiPath,Files.readAllBytes(ascii));
   files.put("pack.mcmeta","{\"pack\":{\"pack_format\":46,\"description\":\"TilkiCraft - Weapons, Login, HUD, Tags | 1.21.4\"}}".getBytes(java.nio.charset.StandardCharsets.UTF_8));
   Files.createDirectories(Path.of("dist"));
   Path zip=Path.of("dist/TilkiResourcePack-ResourcePack.zip");
