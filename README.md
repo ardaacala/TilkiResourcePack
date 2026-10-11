@@ -4,9 +4,9 @@ Spigot 1.21.4 / Java 21 için CombatGuns, TilkiLoginScreen, TilkiInterface ve Ti
 
 ## Kurulum
 
-Sunucudaki eski TilkiResourcePack ve TilkiInterface JAR dosyalarını kaldırıp [v1.0.8](https://github.com/ardaacala/TilkiResourcePack/releases/tag/v1.0.8) ve [TilkiInterface v1.4.3](https://github.com/ardaacala/TilkiInterface/releases/tag/v1.4.3) JAR dosyalarını `plugins` klasörüne koyun. CombatGuns, TilkiLoginScreen ve TilkiTags kurulu kalır. Ayar klasörlerini koruyun. Resmî eski paket adresleri ve SHA1 değerleri açılışta güncellenir; özel adresler korunur.
+Sunucudaki eski TilkiResourcePack ve TilkiInterface JAR dosyalarını kaldırıp [v1.0.9](https://github.com/ardaacala/TilkiResourcePack/releases/tag/v1.0.9) ve [TilkiInterface v1.4.4](https://github.com/ardaacala/TilkiInterface/releases/tag/v1.4.4) JAR dosyalarını `plugins` klasörüne koyun. CombatGuns, TilkiLoginScreen ve TilkiTags kurulu kalır. Ayar klasörlerini koruyun. Resmî eski paket adresleri ve SHA1 değerleri açılışta güncellenir; özel adresler korunur.
 
-Birleşik ZIP yaklaşık 541 KB'dir. Normal yazıların ASCII karakterleri için deneme paketindeki `assets/minecraft/textures/font/ascii.png` kullanılır. Türkçe karakterler Minecraft 1.21.4'ün Latin Avrupa/Unifont fontlarından gelir. TTF font profilleri ve `/tilkipack font` komutu kaldırılmıştır. Giriş logosu, silahlar, rozetler ve ESC teması kalır. HUD ile TAB çerçeveleri kaldırıldı; HUD üstünde küçük tilki başı, TAB yazılarının üstünde ayrı TilkiCraft logosu bulunur. Eski `font-style` ve `profiles` ayarları otomatik temizlenir. Varsayılan ikinci paket gecikmesi 10 tick'tir.
+Birleşik ZIP yaklaşık 595 KB'dir. Normal yazıların ASCII karakterleri için deneme paketindeki `assets/minecraft/textures/font/ascii.png` kullanılır. Türkçe karakterler Minecraft 1.21.4'ün Latin Avrupa/Unifont fontlarından gelir. TTF font profilleri ve `/tilkipack font` komutu kaldırılmıştır. Giriş logosu, silahlar, rozetler ve TilkiCraft logolu ESC çerçevesi kalır. HUD ile TAB çerçeveleri kaldırıldı; HUD üstünde küçük tilki başı, TAB yazılarının üstünde ayrı TilkiCraft logosu bulunur. Eski `font-style` ve `profiles` ayarları otomatik temizlenir. Varsayılan ikinci paket gecikmesi 10 tick'tir.
 
 HUD ve TAB varsayılan Minecraft zeminini kullanır. İki logo yazılardan ayrı yerleştirilir. `sidebar.enabled: false` ve `tab.enabled: false` ile paneller kapatılabilir.
 
