@@ -42,8 +42,8 @@ public final class TilkiResourcePack extends JavaPlugin implements Listener,Comm
         }
         String candidate=getConfig().getString("url","");
         String digestText=getConfig().getString("sha1","");
-        if(candidate.startsWith("https://github.com/ardaacala/TilkiResourcePack/releases/download/") && !candidate.contains("/v1.0.11/")) {
-            candidate="https://github.com/ardaacala/TilkiResourcePack/releases/download/v1.0.11/TilkiResourcePack-ResourcePack.zip";
+        if(candidate.startsWith("https://github.com/ardaacala/TilkiResourcePack/releases/download/") && !candidate.contains("/v1.0.12/")) {
+            candidate="https://github.com/ardaacala/TilkiResourcePack/releases/download/v1.0.12/TilkiResourcePack-ResourcePack.zip";
             digestText=getConfig().getDefaults().getString("sha1");
             getConfig().set("url",candidate);getConfig().set("sha1",digestText);
         }
