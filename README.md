@@ -1,38 +1,19 @@
-# TilkiCraft ortak kaynak paketi
+# TilkiResourcePack
 
-Spigot 1.21.4 / Java 21. CombatGuns, TilkiLoginScreen, TilkiInterface ve TilkiTags kaynakları tek ZIP içindedir. TilkiResourcePack oyuncu başına tek paket isteği gönderir. Güncellenmiş dört eklenti ortak paketin yüklenme sonucunu kullanır; kendi paketlerini ayrıca göndermez. Ortak eklenti yoksa eski bağımsız paket davranışı sürer.
+Spigot 1.21.4 / Java 21 için CombatGuns, TilkiLoginScreen, TilkiInterface ve TilkiTags varlıklarını tek kaynak paketinde birleştirir. Oyuncu giriş paketi tamamlandıktan sonra ortak paket gönderilir.
 
 ## Kurulum
 
-1. Sunucuyu kapatın.
-2. `TilkiResourcePack-1.0.6.jar`, `TilkiInterface-1.4.1.jar` ve `TilkiTags-1.3.1.jar` dosyalarını sunucunun `plugins` klasörüne koyun. Eski sürüm JAR'larını, özellikle `TilkiStatsHUD-*.jar` dosyasını kaldırın. Ayar klasörlerini koruyun; TilkiInterface eski TilkiStatsHUD ayarlarını otomatik taşır. CombatGuns ve TilkiLoginScreen kurulu kalır.
-3. AuthMe ve LuckPerms sunucuda kurulu kalmalıdır. Bu paket bunların yerini almaz.
-4. Sunucuyu yeniden başlatın. GitHub ZIP adresi ve SHA1 hazırdır, ayrıca paket ZIP'ini sunucuya kopyalamanız gerekmez.
-5. server.properties içindeki resource-pack alanında eski bir paket varsa boşaltın. Başka paket gönderen eklentiler de ayrı indirme isteği oluşturabilir.
+Sunucudaki eski TilkiResourcePack ve TilkiInterface JAR dosyalarını kaldırıp [v1.0.7](https://github.com/ardaacala/TilkiResourcePack/releases/tag/v1.0.7) ve [TilkiInterface v1.4.2](https://github.com/ardaacala/TilkiInterface/releases/tag/v1.4.2) JAR dosyalarını `plugins` klasörüne koyun. CombatGuns, TilkiLoginScreen ve TilkiTags kurulu kalır. Ayar klasörlerini koruyun. Resmî eski paket adresleri ve SHA1 değerleri açılışta güncellenir; özel adresler korunur.
 
-Sağ HUD turuncu köşeli çerçeve ve üstte TilkiCraft logosu içerir. TAB üstünde logo, turuncu ayraçlar; altında oyuncu, ping ve rütbe bulunur. TilkiTags oyuncu isimleri ve rozetlerini yönetmeye devam eder. TAB dış çerçevesi görünür oyuncu sayısına ve isim genişliğine göre seçilir. Minecraft doğal sütun yerleşimini korur; çok küçük pencereler veya yüksek GUI ölçeği kenarları kırpabilir.
+Birleşik ZIP yaklaşık 596 KB'dir. Genel Minecraft yazı fontunu değiştirmez; font profilleri ve `/tilkipack font` komutu kaldırılmıştır. Giriş logosu, silahlar, rozetler, ESC teması, HUD ve TAB çerçeveleri kalır. Eski `font-style` ve `profiles` ayarları otomatik temizlenir. Varsayılan ikinci paket gecikmesi 10 tick'tir.
 
-HUD çerçevesi metne göre 128, 144, 160 veya 192 piksel genişliğinde, 13 satır içindir. Çok uzun özel satırlar sınırları aşabilir. Ölüm/öldürme satırları kaldırılmıştır; istatistik simgeleri ve yalnız tilki maskotu eklenmiştir. `sidebar.frame: false` ve `tab.enabled: false` ile kapatılabilir. `tab.header` ve `tab.footer` satır listeleri özelleştirilebilir; `{tab-logo}`, `{online}`, `{max}`, `{player}`, `{ping}`, `{rank}` kullanılabilir.
+HUD'un üst kenarında tilki başı, TAB çerçevesinin üstünde TilkiCraft logosu bulunur. İnce ve kesintisiz yan kenarlar oyuncu listesi uzarken dikkat çeken bir tekrar oluşturmaz. `sidebar.frame: false` ve `tab.enabled: false` ile paneller kapatılabilir. Çok küçük pencere veya yüksek GUI ölçeğinde TAB kenarı kırpılabilir.
 
-`/tilkipack reload` ortak paketi yeniden gönderir. `/tilkiui reload` ve `/tilkitags reload`, ortak paket etkin olduğunda yeni indirme istemez.
+`/tilkipack reload` ayarları yeniden okur ve paketi tekrar gönderir. `/tilkiui reload` ve `/tilkitags reload` ortak paket etkinken ek indirme başlatmaz.
 
-## Doğrulama
+## Geliştirme
 
-Güncellenen üç eklenti derlenmiştir; 20 birim testi geçmiştir. Diğer iki eklenti önceki güncellemenin derlenmiş sürümleridir. Ortak ZIP 1308 dosya, dört modül fontu ve seçilen metin fontu referansı içerir. Canlı Minecraft istemcisinde görüntü ve eklentiler arası çalışma ayrıca denenmelidir.
+Java 21 ile `mvn test package` çalıştırın. `tools/BuildCombinedPack.java` dört projenin `resourcepack` klasörünü birleştirir. `tools/ValidatePack.ps1` ZIP içeriğini, font referanslarını, atlas sınırlarını ve SHA1 değerini doğrular; paket 2 MB'ı aşarsa hata verir.
 
-## Ada seviyesi ve beyaz isimler
-
-Chat, TAB ve oyuncu üzerinde seviye + rozet + beyaz isim gösterilir. PlaceholderAPI ve SuperiorSkyblock2 kurulu olmalıdır. Varsayılan `%superior_island_level_format%` alanı SuperiorSkyblock tarafından sağlanır: https://wiki.bg-software.com/superiorskyblock/overview/placeholders/island-placeholders . Başka ada eklentisi kullanılırsa TilkiTags ve TilkiInterface config dosyalarında `island-level.placeholder` değiştirilir. Çözülmeyen placeholder veya adası olmayan oyuncu için 0 gösterilir. HUD seviye satırı artık ada seviyesidir.
-
-Eski TilkiTags, TilkiStatsHUD ve TilkiResourcePack JAR sürümlerini kaldırın; klasörlerini silmeyin. TilkiInterface ilk açılışta eski TilkiStatsHUD ayarlarını kopyalar. Resmî eski kaynak paketi adresleri otomatik güncellenir. Tilki rozeti artık `Tilki` yazılıdır; bütün rozetler kalın piksel yazı kullanır.
-
-## 1.0.2 — HD fontlar ve süslemeli çerçeveler
-
-TilkiStatsHUD ve TilkiTags 1.3.0 ile kullanılır. Rozetler 3 kat çözünürlükte, yumuşatılmış yazı ile çizilir. HUD/TAB ahşap, metal, altın ve tilki başı süslemeli HD çerçeve kullanır. 4 kat kaynak çözünürlüğü, atlas sınırını aşmayan 885 parçaya bölünür. HUD altındaki TilkiCraft • Skyblock satırı seçili fonta göre ortalanır. Paper sayı gizleme API'si ve Spigot'un paket içi CraftObjective metodu üzerinden boş sayı formatı desteklenir. Desteklenmeyen sunucuda açık uyarı yazılır.
-
-Genel oyun fontları (Türkçe destekli, SIL OFL lisanslı Noto):
-- modern: Noto Sans; varsayılan.
-- classic: Noto Sans Mono.
-- fantasy: Noto Serif.
-
-Yönetici komutu: `/tilkipack font modern`, `/tilkipack font classic` veya `/tilkipack font fantasy`. Seçim sunucu genelindedir, config dosyasına kaydedilir ve oyunculara seçilen tek birleşik paket gönderilir. Diğer iki font paketi otomatik olarak ayrıca indirilmez. `/tilkipack reload` ayarları yeniden okur. Çerçeve ve fontların görünümü GUI ölçeğine bağlıdır; küçük pencerelerde TAB kırpılabilir. Canlı istemci kontrolü henüz yapılmamıştır.
+Canlı Minecraft istemcisinde görünüm ve gerçek indirme süresi ayrıca kontrol edilmelidir.

@@ -10,7 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class TilkiResourcePack extends JavaPlugin implements Listener,CommandExecutor {
     public static final UUID PACK_ID=UUID.fromString("2c17449c-7006-4595-ae41-bef76e22ea31");
     private final PackSessions sessions=new PackSessions();
-    private String url,prompt,fontStyle="modern";
+    private String url,prompt;
     private byte[] hash;
     private boolean required;
     private long delay;
@@ -35,27 +35,26 @@ public final class TilkiResourcePack extends JavaPlugin implements Listener,Comm
             getConfig().set("delivery.non-blocking-v1",true);
             saveConfig();
         }
-        if(getConfig().getString("url","").startsWith("https://github.com/ardaacala/TilkiResourcePack/releases/download/") && !getConfig().getString("url","").contains("/v1.0.6/")) {
-            getConfig().set("url","https://github.com/ardaacala/TilkiResourcePack/releases/download/v1.0.6/TilkiResourcePack-ResourcePack.zip");
-            getConfig().set("sha1","b6c1af7a139a933ee2d0de08d69fafe78234707c");
-            for(String style:List.of("modern","classic","fantasy")) for(String field:List.of("url","sha1")) {
-                String key="profiles."+style+"."+field;
-                getConfig().set(key,getConfig().getDefaults().getString(key));
-            }
+        if(!getConfig().getBoolean("delivery.fast-second-pack-v1",false)) {
+            if(getConfig().getLong("delay-ticks",40)==40)getConfig().set("delay-ticks",10);
+            getConfig().set("delivery.fast-second-pack-v1",true);
             saveConfig();
         }
-        fontStyle=getConfig().getString("font-style","modern").toLowerCase(Locale.ROOT);
-        if(!Set.of("modern","classic","fantasy").contains(fontStyle))throw new IllegalArgumentException("Unknown font-style");
         String candidate=getConfig().getString("url","");
         String digestText=getConfig().getString("sha1","");
-        if(candidate.startsWith("https://github.com/ardaacala/TilkiResourcePack/releases/download/")) {
-            candidate=getConfig().getString("profiles."+fontStyle+".url",candidate);
-            digestText=getConfig().getString("profiles."+fontStyle+".sha1",digestText);
+        if(candidate.startsWith("https://github.com/ardaacala/TilkiResourcePack/releases/download/") && !candidate.contains("/v1.0.7/")) {
+            candidate="https://github.com/ardaacala/TilkiResourcePack/releases/download/v1.0.7/TilkiResourcePack-ResourcePack.zip";
+            digestText=getConfig().getDefaults().getString("sha1");
+            getConfig().set("url",candidate);getConfig().set("sha1",digestText);
         }
+        if(getConfig().contains("profiles") || getConfig().contains("font-style")) {
+            getConfig().set("profiles",null);getConfig().set("font-style",null);
+        }
+        saveConfig();
         byte[] digest=HexFormat.of().parseHex(digestText);
         if(!candidate.startsWith("https://")||digest.length!=20) throw new IllegalArgumentException("Combined pack requires HTTPS URL and 40-character SHA1");
         url=candidate;hash=digest;prompt=getConfig().getString("prompt","TilkiCraft");
-        required=getConfig().getBoolean("required",false);delay=Math.max(1,getConfig().getLong("delay-ticks",40));
+        required=getConfig().getBoolean("required",false);delay=Math.max(1,getConfig().getLong("delay-ticks",10));
     }
     private void bindAuth() {
         var plugin=Bukkit.getPluginManager().getPlugin("AuthMe");
@@ -81,7 +80,6 @@ public final class TilkiResourcePack extends JavaPlugin implements Listener,Comm
         catch(ReflectiveOperationException ex) { return false; }
     }
     public boolean isLoaded(UUID playerId) { return sessions.loaded(playerId); }
-    public String getFontStyle() { return fontStyle; }
     private void request(Player player) {
         UUID id=player.getUniqueId();var session=sessions.beginWhenReady(id,authenticated(player),loginSettled(player));
         if(session==null)return;
@@ -114,12 +112,10 @@ public final class TilkiResourcePack extends JavaPlugin implements Listener,Comm
     }
     @Override public boolean onCommand(CommandSender sender,Command command,String label,String[] args) {
         if(!sender.hasPermission("tilkipack.admin"))return true;
-        reloadConfig();
-        if(args.length==2 && args[0].equalsIgnoreCase("font")) {
-            String style=args[1].toLowerCase(Locale.ROOT);
-            if(!Set.of("modern","classic","fantasy").contains(style)) { sender.sendMessage("/tilkipack font modern|classic|fantasy");return true; }
-            getConfig().set("font-style",style);saveConfig();
+        if(args.length>0 && (args.length!=1 || !args[0].equalsIgnoreCase("reload"))) {
+            sender.sendMessage("/tilkipack reload");return true;
         }
+        reloadConfig();
         try { settings(); } catch(IllegalArgumentException ex) { sender.sendMessage("Paket ayarı hatalı: "+ex.getMessage());return true; }
         sessions.clear();for(Player player:Bukkit.getOnlinePlayers())request(player);
         sender.sendMessage("Birleşik paket ayarları yenilendi; oyunculara tek paket gönderildi.");return true;
