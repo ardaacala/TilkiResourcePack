@@ -1,11 +1,11 @@
 # TilkiCraft ortak kaynak paketi
 
-Spigot 1.21.4 / Java 21. CombatGuns, TilkiLoginScreen, TilkiStatsHUD ve TilkiTags kaynakları tek ZIP içindedir. TilkiResourcePack oyuncu başına tek paket isteği gönderir. Güncellenmiş dört eklenti ortak paketin yüklenme sonucunu kullanır; kendi paketlerini ayrıca göndermez. Ortak eklenti yoksa eski bağımsız paket davranışı sürer.
+Spigot 1.21.4 / Java 21. CombatGuns, TilkiLoginScreen, TilkiInterface ve TilkiTags kaynakları tek ZIP içindedir. TilkiResourcePack oyuncu başına tek paket isteği gönderir. Güncellenmiş dört eklenti ortak paketin yüklenme sonucunu kullanır; kendi paketlerini ayrıca göndermez. Ortak eklenti yoksa eski bağımsız paket davranışı sürer.
 
 ## Kurulum
 
 1. Sunucuyu kapatın.
-2. TilkiCraft-Update.zip içindeki plugins klasöründeki beş JAR'ı sunucunun plugins klasörüne kopyalayın. Aynı isimli eski dosyaların üzerine yazın; farklı sürüm isimli eski kopyaları kaldırın. Mevcut ayar klasörlerini koruyun.
+2. `TilkiResourcePack-1.0.6.jar`, `TilkiInterface-1.4.1.jar` ve `TilkiTags-1.3.1.jar` dosyalarını sunucunun `plugins` klasörüne koyun. Eski sürüm JAR'larını, özellikle `TilkiStatsHUD-*.jar` dosyasını kaldırın. Ayar klasörlerini koruyun; TilkiInterface eski TilkiStatsHUD ayarlarını otomatik taşır. CombatGuns ve TilkiLoginScreen kurulu kalır.
 3. AuthMe ve LuckPerms sunucuda kurulu kalmalıdır. Bu paket bunların yerini almaz.
 4. Sunucuyu yeniden başlatın. GitHub ZIP adresi ve SHA1 hazırdır, ayrıca paket ZIP'ini sunucuya kopyalamanız gerekmez.
 5. server.properties içindeki resource-pack alanında eski bir paket varsa boşaltın. Başka paket gönderen eklentiler de ayrı indirme isteği oluşturabilir.
@@ -22,9 +22,9 @@ Güncellenen üç eklenti derlenmiştir; 20 birim testi geçmiştir. Diğer iki 
 
 ## Ada seviyesi ve beyaz isimler
 
-Chat, TAB ve oyuncu üzerinde seviye + rozet + beyaz isim gösterilir. PlaceholderAPI ve SuperiorSkyblock2 kurulu olmalıdır. Varsayılan `%superior_island_level_format%` alanı SuperiorSkyblock tarafından sağlanır: https://wiki.bg-software.com/superiorskyblock/overview/placeholders/island-placeholders . Başka ada eklentisi kullanılırsa TilkiTags ve TilkiStatsHUD config dosyalarında `island-level.placeholder` değiştirilir. Çözülmeyen placeholder veya adası olmayan oyuncu için 0 gösterilir. HUD seviye satırı artık ada seviyesidir.
+Chat, TAB ve oyuncu üzerinde seviye + rozet + beyaz isim gösterilir. PlaceholderAPI ve SuperiorSkyblock2 kurulu olmalıdır. Varsayılan `%superior_island_level_format%` alanı SuperiorSkyblock tarafından sağlanır: https://wiki.bg-software.com/superiorskyblock/overview/placeholders/island-placeholders . Başka ada eklentisi kullanılırsa TilkiTags ve TilkiInterface config dosyalarında `island-level.placeholder` değiştirilir. Çözülmeyen placeholder veya adası olmayan oyuncu için 0 gösterilir. HUD seviye satırı artık ada seviyesidir.
 
-Eski TilkiTags, TilkiStatsHUD ve TilkiResourcePack JAR sürümlerini kaldırın; klasörlerini silmeyin. Resmî eski kaynak paketi adresleri otomatik güncellenir. Tilki rozeti artık `Tilki` yazılıdır; bütün rozetler kalın piksel yazı kullanır.
+Eski TilkiTags, TilkiStatsHUD ve TilkiResourcePack JAR sürümlerini kaldırın; klasörlerini silmeyin. TilkiInterface ilk açılışta eski TilkiStatsHUD ayarlarını kopyalar. Resmî eski kaynak paketi adresleri otomatik güncellenir. Tilki rozeti artık `Tilki` yazılıdır; bütün rozetler kalın piksel yazı kullanır.
 
 ## 1.0.2 — HD fontlar ve süslemeli çerçeveler
 

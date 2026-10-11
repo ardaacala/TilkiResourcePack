@@ -1,8 +1,9 @@
 name: TilkiResourcePack
-version: 1.0.2
+version: 1.0.6
 main: com.tilkicraft.pack.TilkiResourcePack
 api-version: '1.21'
-loadbefore: [CombatGuns, TilkiLoginScreen, TilkiStatsHUD, TilkiTags]
+loadbefore: [CombatGuns, TilkiLoginScreen, TilkiInterface, TilkiTags]
+softdepend: [AuthMe]
 commands:
   tilkipack:
     description: Birleşik paket ayarlarını yenile

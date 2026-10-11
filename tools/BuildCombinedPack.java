@@ -25,10 +25,15 @@ class BuildCombinedPack {
     JsonArray providers=new JsonArray();for(JsonElement original:font.getValue()) {JsonObject p=original.deepCopy().getAsJsonObject();if(p.has("id")&&p.get("id").getAsString().startsWith("tilkiinterface:text_"))p.addProperty("id","tilkiinterface:text_"+style);providers.add(p);}
     JsonObject object=new JsonObject();object.add("providers",providers);files.put(font.getKey(),object.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
    }
-   String name="TilkiCraft-ResourcePack"+(style.equals("modern")?"":"-"+style)+".zip";Path zip=Path.of("dist",name);
-   try(var output=new ZipOutputStream(Files.newOutputStream(zip))) { for(var file:files.entrySet()) {var entry=new ZipEntry(file.getKey());entry.setTime(0);output.putNextEntry(entry);output.write(file.getValue());output.closeEntry();} }
+   String name="TilkiResourcePack-ResourcePack"+(style.equals("modern")?"":"-"+style)+".zip";Path zip=Path.of("dist",name);
+   try(var output=new ZipOutputStream(Files.newOutputStream(zip))) { for(var file:files.entrySet()) {
+    // Only the selected text font is needed by this profile.
+    String path=file.getKey();
+    if(path.matches("assets/tilkiinterface/font/fonts/(modern|classic|fantasy)\\.ttf") && !path.endsWith("/"+style+".ttf"))continue;
+    if(path.matches("assets/tilkiinterface/font/text_(modern|classic|fantasy)\\.json") && !path.endsWith("text_"+style+".json"))continue;
+    var entry=new ZipEntry(path);entry.setTime(0);output.putNextEntry(entry);output.write(file.getValue());output.closeEntry();} }
    String hash=HexFormat.of().formatHex(MessageDigest.getInstance("SHA-1").digest(Files.readAllBytes(zip)));
-   JsonObject profile=new JsonObject();profile.addProperty("url","https://github.com/ardaacala/TilkiResourcePack/releases/download/v1.0.2/"+name);profile.addProperty("sha1",hash);profiles.add(style,profile);
+   JsonObject profile=new JsonObject();profile.addProperty("url","https://github.com/ardaacala/TilkiResourcePack/releases/download/v1.0.6/"+name);profile.addProperty("sha1",hash);profiles.add(style,profile);
    if(style.equals("modern"))Files.writeString(Path.of("dist/resourcepack-sha1.txt"),hash+"\n");System.out.println(style+": "+files.size()+" assets; SHA1 "+hash);
   }
   Files.writeString(Path.of("dist/font-profiles.json"),profiles.toString());

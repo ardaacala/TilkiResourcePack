@@ -4,7 +4,7 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 Add-Type -AssemblyName System.Drawing
 $root=Split-Path $PSScriptRoot -Parent
 $suffix=if($FontStyle -eq 'modern'){''}else{"-$FontStyle"}
-$path=Join-Path $root "dist/TilkiCraft-ResourcePack$suffix.zip"
+$path=Join-Path $root "dist/TilkiResourcePack-ResourcePack$suffix.zip"
 $zip=[IO.Compression.ZipFile]::OpenRead($path)
 function Read-Json($entry) {
  $reader=[IO.StreamReader]::new($entry.Open())

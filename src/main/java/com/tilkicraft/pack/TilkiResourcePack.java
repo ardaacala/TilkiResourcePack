@@ -14,17 +14,35 @@ public final class TilkiResourcePack extends JavaPlugin implements Listener,Comm
     private byte[] hash;
     private boolean required;
     private long delay;
+    private Object authApi;
+    private java.lang.reflect.Method authenticated,unrestricted;
     @Override public void onEnable() {
         saveDefaultConfig();
         try { settings(); } catch(IllegalArgumentException ex) { getLogger().severe(ex.getMessage()); Bukkit.getPluginManager().disablePlugin(this);return; }
         Bukkit.getPluginManager().registerEvents(this,this);
+        bindAuth();
+        Bukkit.getScheduler().runTaskTimer(this,()->{for(Player player:Bukkit.getOnlinePlayers())request(player);},20,20);
         Objects.requireNonNull(getCommand("tilkipack")).setExecutor(this);
         for(Player player:Bukkit.getOnlinePlayers()) request(player);
     }
     private void settings() {
-        if(getConfig().getString("url","").startsWith("https://github.com/ardaacala/TilkiResourcePack/releases/download/") && !getConfig().getString("url","").contains("/v1.0.2/")) {
-            getConfig().set("url","https://github.com/ardaacala/TilkiResourcePack/releases/download/v1.0.2/TilkiCraft-ResourcePack.zip");
-            getConfig().set("sha1","70826269ac773197fb2f919b9c5e1e31659cf1fb");saveConfig();
+        if(!getConfig().getBoolean("delivery.two-stage-v1",false)) {
+            getConfig().set("delivery.wait-for-authentication",true);
+            getConfig().set("delivery.two-stage-v1",true);saveConfig();
+        }
+        if(!getConfig().getBoolean("delivery.non-blocking-v1",false)) {
+            getConfig().set("required",false);
+            getConfig().set("delivery.non-blocking-v1",true);
+            saveConfig();
+        }
+        if(getConfig().getString("url","").startsWith("https://github.com/ardaacala/TilkiResourcePack/releases/download/") && !getConfig().getString("url","").contains("/v1.0.6/")) {
+            getConfig().set("url","https://github.com/ardaacala/TilkiResourcePack/releases/download/v1.0.6/TilkiResourcePack-ResourcePack.zip");
+            getConfig().set("sha1","b6c1af7a139a933ee2d0de08d69fafe78234707c");
+            for(String style:List.of("modern","classic","fantasy")) for(String field:List.of("url","sha1")) {
+                String key="profiles."+style+"."+field;
+                getConfig().set(key,getConfig().getDefaults().getString(key));
+            }
+            saveConfig();
         }
         fontStyle=getConfig().getString("font-style","modern").toLowerCase(Locale.ROOT);
         if(!Set.of("modern","classic","fantasy").contains(fontStyle))throw new IllegalArgumentException("Unknown font-style");
@@ -37,16 +55,40 @@ public final class TilkiResourcePack extends JavaPlugin implements Listener,Comm
         byte[] digest=HexFormat.of().parseHex(digestText);
         if(!candidate.startsWith("https://")||digest.length!=20) throw new IllegalArgumentException("Combined pack requires HTTPS URL and 40-character SHA1");
         url=candidate;hash=digest;prompt=getConfig().getString("prompt","TilkiCraft");
-        required=getConfig().getBoolean("required",true);delay=Math.max(1,getConfig().getLong("delay-ticks",10));
+        required=getConfig().getBoolean("required",false);delay=Math.max(1,getConfig().getLong("delay-ticks",40));
+    }
+    private void bindAuth() {
+        var plugin=Bukkit.getPluginManager().getPlugin("AuthMe");
+        if(plugin==null || !plugin.isEnabled())return;
+        try {
+            Class<?> type=Class.forName("fr.xephi.authme.api.v3.AuthMeApi",true,plugin.getClass().getClassLoader());
+            Object api=type.getMethod("getInstance").invoke(null);
+            var check=type.getMethod("isAuthenticated",Player.class);
+            var bypass=type.getMethod("isUnrestricted",Player.class);
+            authApi=api;authenticated=check;unrestricted=bypass;
+        } catch(ReflectiveOperationException ex) { getLogger().warning("AuthMe hook unavailable; pack will be sent after the configured delay."); }
+    }
+    private boolean loginSettled(Player player) {
+        var login=Bukkit.getPluginManager().getPlugin("TilkiLoginScreen");
+        if(login!=null && login.isEnabled()) try {
+            if(!(boolean)login.getClass().getMethod("isInitialPackSettled",UUID.class).invoke(login,player.getUniqueId()))return false;
+        } catch(ReflectiveOperationException ignored) { /* Older login plugin: retain authentication gate. */ }
+        return true;
+    }
+    private boolean authenticated(Player player) {
+        if(authApi==null || !getConfig().getBoolean("delivery.wait-for-authentication",true))return true;
+        try { return (boolean)authenticated.invoke(authApi,player) || (boolean)unrestricted.invoke(authApi,player); }
+        catch(ReflectiveOperationException ex) { return false; }
     }
     public boolean isLoaded(UUID playerId) { return sessions.loaded(playerId); }
     public String getFontStyle() { return fontStyle; }
     private void request(Player player) {
-        UUID id=player.getUniqueId();var session=sessions.begin(id);
+        UUID id=player.getUniqueId();var session=sessions.beginWhenReady(id,authenticated(player),loginSettled(player));
         if(session==null)return;
         Bukkit.getScheduler().runTaskLater(this,()->{
             Player current=Bukkit.getPlayer(id);
             if(current==null||!sessions.current(id,session))return;
+            if(!authenticated(current) || !loginSettled(current)) { sessions.remove(id);return; }
             current.addResourcePack(PACK_ID,url,hash,prompt,required);
         },delay);
     }
@@ -55,6 +97,20 @@ public final class TilkiResourcePack extends JavaPlugin implements Listener,Comm
     @EventHandler public void status(PlayerResourcePackStatusEvent event) {
         if(!PACK_ID.equals(event.getID()))return;
         sessions.status(event.getPlayer().getUniqueId(),event.getStatus()==PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED);
+        String status=event.getStatus().name();
+        if(status.equals("FAILED_DOWNLOAD") || status.equals("FAILED_RELOAD") || status.equals("INVALID_URL") || status.equals("DECLINED")) {
+            getLogger().warning("Resource pack "+status+" for "+event.getPlayer().getName()+"; URL="+url+"; SHA1="+HexFormat.of().formatHex(hash)+"; required="+required);
+        }
+        if(status.equals("FAILED_DOWNLOAD")) {
+            UUID id=event.getPlayer().getUniqueId();var session=sessions.retry(id);
+            if(session!=null)Bukkit.getScheduler().runTaskLater(this,()->{
+                Player current=Bukkit.getPlayer(id);
+                if(current!=null && sessions.current(id,session)) {
+                    if(authenticated(current) && loginSettled(current))current.addResourcePack(PACK_ID,url,hash,prompt,required);
+                    else sessions.remove(id);
+                }
+            },100);
+        }
     }
     @Override public boolean onCommand(CommandSender sender,Command command,String label,String[] args) {
         if(!sender.hasPermission("tilkipack.admin"))return true;
