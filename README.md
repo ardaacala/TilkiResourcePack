@@ -4,11 +4,15 @@ Spigot 1.21.4 / Java 21 için CombatGuns, TilkiLoginScreen, TilkiInterface ve Ti
 
 ## Kurulum
 
-Sunucudaki eski TilkiResourcePack, TilkiInterface, TilkiTags ve AuraCosmetics JAR dosyalarını kaldırıp [v1.0.22](https://github.com/ardaacala/TilkiResourcePack/releases/tag/v1.0.22), [TilkiInterface v1.5.0](https://github.com/ardaacala/TilkiInterface/releases/tag/v1.5.0), [TilkiTags v1.3.6](https://github.com/ardaacala/TilkiTags/releases/tag/v1.3.6) ve [AuraCosmetics v1.1.0](https://github.com/ardaacala/TilkiAuraCosmetics/releases/tag/v1.1.0) JAR dosyalarını `plugins` klasörüne koyun. CombatGuns ve TilkiLoginScreen kurulu kalır. Ayar klasörlerini koruyun. Resmî eski paket adresleri ve SHA1 değerleri açılışta güncellenir; özel adresler korunur.
+Sunucudaki eski TilkiResourcePack, TilkiInterface, TilkiTags ve AuraCosmetics JAR dosyalarını kaldırıp [v1.0.23](https://github.com/ardaacala/TilkiResourcePack/releases/tag/v1.0.23), [TilkiInterface v1.6.0](https://github.com/ardaacala/TilkiInterface/releases/tag/v1.6.0), [TilkiTags v1.3.6](https://github.com/ardaacala/TilkiTags/releases/tag/v1.3.6) ve [AuraCosmetics v1.1.0](https://github.com/ardaacala/TilkiAuraCosmetics/releases/tag/v1.1.0) JAR dosyalarını `plugins` klasörüne koyun. CombatGuns ve TilkiLoginScreen kurulu kalır. Ayar klasörlerini koruyun. Resmî eski paket adresleri ve SHA1 değerleri açılışta güncellenir; özel adresler korunur.
 
-Birleşik ZIP yaklaşık 1,1 MB'dir. Normal yazıların ASCII karakterleri için deneme paketindeki `assets/minecraft/textures/font/ascii.png` kullanılır. Türkçe karakterler Minecraft'ın Latin Avrupa/Unifont fontlarından gelir. Paket şunları içerir: silahlar, giriş logosu, rütbe rozetleri, aura dokuları, orman temalı ESC menüsü, istatistik paneli simgeleri ve logosu, TAB çerçevesi ve ahşap/turuncu kontrol dokuları. Varsayılan ikinci paket gecikmesi 10 tick'tir.
+Birleşik ZIP yaklaşık 3 MB'dir. Normal yazıların ASCII karakterleri için deneme paketindeki `assets/minecraft/textures/font/ascii.png` kullanılır. Türkçe karakterler Minecraft'ın Latin Avrupa/Unifont fontlarından gelir. Paket şunları içerir: silahlar, giriş logosu, rütbe rozetleri, aura dokuları, orman temalı ESC menüsü, istatistik paneli simgeleri ve logosu, TAB çerçevesi ve ahşap/turuncu kontrol dokuları. Varsayılan ikinci paket gecikmesi 10 tick'tir.
 
 `sidebar.enabled: false` ve `tab.enabled: false` ile paneller kapatılabilir; `tab.style: text` düz TAB başlığına döner.
+
+v1.0.23:
+- ESC, istatistik paneli ve TAB, TilkiInterface 1.6.0 ile yalnızca ayrı tasarım parçalarından üretilir; başlıklar gerçek font glifleridir.
+- 26.2+ overlay'i kaldırıldı; yeni ESC çerçevesi iki duraklatma düzeninde de aynı dokuyu kullanır.
 
 v1.0.22:
 - ESC menüsü, orman tasarımından 1x piksel-art olarak üretilir.
@@ -23,6 +27,6 @@ v1.0.13–v1.0.19 yalnızca ayrı `TilkiCraft-HD.zip` paket sürümleridir. Ayr�
 
 ## Geliştirme
 
-Java 21 ile `mvn test package` çalıştırın. `tools/BuildCombinedPack.java` dört projenin `resourcepack` klasörünü birleştirir ve yalnızca [ASCII atlasını](overlay/assets/minecraft/textures/font/ascii.png) ekler. `tools/ValidatePack.ps1` ZIP içeriğini, font referanslarını, tüm yazdırılabilir ASCII karakterlerini, atlas sınırlarını ve SHA1 değerini doğrular; paket 2 MB'ı aşarsa hata verir.
+Java 21 ile `mvn test package` çalıştırın. `tools/BuildCombinedPack.java` dört projenin `resourcepack` klasörünü birleştirir ve yalnızca [ASCII atlasını](overlay/assets/minecraft/textures/font/ascii.png) ekler. `tools/ValidatePack.ps1` ZIP içeriğini, font referanslarını, tüm yazdırılabilir ASCII karakterlerini, atlas sınırlarını ve SHA1 değerini doğrular; paket 4 MB'ı aşarsa hata verir.
 
 Canlı Minecraft istemcisinde görünüm ve gerçek indirme süresi ayrıca kontrol edilmelidir.

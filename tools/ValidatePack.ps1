@@ -48,30 +48,35 @@ try {
    if($provider.type -eq 'ttf') { throw 'Global text font remains' }
    if($provider.type -eq 'space') { $characters=$provider.advances.PSObject.Properties.Name }
    elseif($provider.type -eq 'bitmap') {
-    $characters=foreach($row in $provider.chars) { $enumerator=[Globalization.StringInfo]::GetTextElementEnumerator($row);while($enumerator.MoveNext()){$enumerator.GetTextElement()} }
+    # Grid providers pad unused cells with U+0000, which the client skips.
+    $characters=foreach($row in $provider.chars) { $enumerator=[Globalization.StringInfo]::GetTextElementEnumerator($row);while($enumerator.MoveNext()){ if($enumerator.GetTextElement() -ne [string][char]0){$enumerator.GetTextElement()} } }
     $texture=$provider.file.Split(':');$entry=$zip.GetEntry("assets/$($texture[0])/textures/$($texture[1])")
     if(!$entry) { throw "Missing bitmap $($provider.file)" }
     $stream=$entry.Open();$bitmap=[Drawing.Bitmap]::new($stream)
-    try { if($bitmap.Width -gt 256 -or $bitmap.Height -gt 256) { throw 'Bitmap exceeds client atlas bounds' } } finally { $bitmap.Dispose();$stream.Dispose() }
+    # Each glyph cell must fit the client's 256 px font page.
+    $rows=@($provider.chars);$columns=[Globalization.StringInfo]::new($rows[0]).LengthInTextElements
+    try { if($bitmap.Width/$columns -gt 256 -or $bitmap.Height/$rows.Count -gt 256) { throw 'Glyph cell exceeds client font page' } } finally { $bitmap.Dispose();$stream.Dispose() }
    } else { continue }
    foreach($character in $characters) { if($seen.ContainsKey($character)) { throw "Overlapping glyph: $character" };$seen[$character]=$true }
   }
  }
- if(!$zip.GetEntry('assets/tilkiinterface/textures/font/sidebar_logo.png') -or !$zip.GetEntry('assets/tilkiinterface/textures/font/hud/crest.png')) { throw 'Sidebar logo or TAB crest missing' }
+ foreach($tile in @('esc_frame_0','sidebar_13_0','tab_header_1_1_0','tab_post_left_20_0','ascii_title')) { if(!$zip.GetEntry("assets/tilkiinterface/textures/font/v3/$tile.png")) { throw "UI v3 glyph missing: $tile" } }
  if(!$zip.GetEntry('assets/auracosmetics/font/effects.json') -or !$zip.GetEntry('assets/auracosmetics/textures/font/fox.png')) { throw 'Aura effect glyphs missing' }
  $meta=Read-Json $zip.GetEntry('pack.mcmeta')
- if(@($meta.overlays.entries | Where-Object { $_.directory -eq 'tilki_icon_menu' -and $_.min_format -eq 88 }).Count -ne 1 -or !$zip.GetEntry('tilki_icon_menu/assets/tilkiinterface/textures/font/esc_menu/r0c0.png')) { throw '26.2+ ESC overlay missing' }
- if(!$zip.GetEntry('assets/tilkiinterface/textures/font/esc_menu/r0c0.png') -or $zip.GetEntry('assets/tilkiinterface/textures/font/esc_frame.png')) { throw 'Button-anchored ESC frame missing' }
+ # UI v3 needs no overlay: its ESC frame leaves only the first button open in both pause layouts.
+ if($meta.pack.min_format -ne 46 -or $meta.pack.max_format -ne 999 -or $meta.overlays -or ($zip.Entries.FullName | Where-Object { $_ -like 'tilki_*/*' })) { throw 'pack.mcmeta must cover 46..999 without overlays' }
+ if($zip.Entries.FullName | Where-Object { $_ -like 'assets/tilkiinterface/textures/font/esc_menu/*' -or $_ -like 'assets/tilkiinterface/textures/font/hud/*' -or $_ -like 'assets/tilkiinterface/textures/font/sidebar_logo.png' }) { throw 'Screenshot-derived v2 interface assets remain' }
  if($zip.GetEntry('assets/tilkiinterface/textures/font/esc_frame_bottom.png') -or ($zip.Entries.FullName | Where-Object { $_ -like 'assets/tilkiinterface/textures/font/tab_frame/*' })) { throw 'Rejected frame assets remain' }
  foreach($language in @('tr_tr','en_us','en_gb')) {
   $translation=Read-Json $zip.GetEntry("assets/minecraft/lang/$language.json")
-  if($translation.'menu.game' -ne '' -or !$translation.'menu.returnToGame'.StartsWith([string][char]0xea3e)) { throw "ESC frame translation missing: $language" }
+  if($translation.'menu.game' -ne '' -or [int]$translation.'menu.returnToGame'[0] -lt 0xf000 -or [int]$translation.'menu.returnToGame'[0] -gt 0xf00f) { throw "ESC frame translation missing: $language" }
  }
  if($zip.Entries.FullName | Where-Object { $_ -like 'assets/tilkiinterface/textures/font/hd/*' -or $_ -match 'assets/tilkiinterface/textures/font/tab_[0-9]' }) { throw 'Frame texture remains' }
  if($zip.Entries.FullName | Where-Object { $_ -like '*.ttf' -or $_ -like 'assets/tilkiinterface/font/text_*' }) { throw 'Legacy font files remain' }
 } finally { $zip.Dispose() }
 $size=(Get-Item $path).Length
-if($size -gt 2MB) { throw "Combined pack grew beyond 2 MB: $size bytes" }
+# UI v3 carries per-row-count TAB posts and per-column header art (about 2.2 MB on its own).
+if($size -gt 4MB) { throw "Combined pack grew beyond 4 MB: $size bytes" }
 $hash=(Get-FileHash $path -Algorithm SHA1).Hash.ToLowerInvariant()
 if(!([IO.File]::ReadAllText((Join-Path $root 'src/main/resources/config.yml'))).Contains($hash)) { throw 'Combined config SHA1 mismatch' }
-Write-Output "VALID: complete ASCII atlas, forest ESC frame, sidebar logo, TAB frame pieces, rank badges, aura glyphs, themed controls, no TTF, ZIP $size bytes and SHA1."
+Write-Output "VALID: complete ASCII atlas, UI v3 ESC/sidebar/TAB glyphs, no overlays, rank badges, aura glyphs, themed controls, no TTF, ZIP $size bytes and SHA1."

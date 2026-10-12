@@ -37,8 +37,7 @@ class BuildCombinedPack {
   String asciiPath="assets/minecraft/textures/font/ascii.png";
   if(files.containsKey(asciiPath))throw new IllegalStateException("Module already supplies "+asciiPath);
   files.put(asciiPath,Files.readAllBytes(ascii));
-  // TilkiInterface ships a 26.2+ overlay for the icon-row pause menu; reuse its
-  // overlay declaration so 1.21.4 and 26.x clients both pick the right ESC frame.
+  // TilkiInterface's metadata covers 1.21.4 to 26.x (formats 46..999).
   JsonObject meta=JsonParser.parseString(Files.readString(Path.of("../TilkiInterface/resourcepack/pack.mcmeta"))).getAsJsonObject();
   meta.getAsJsonObject("pack").addProperty("description","TilkiCraft - Weapons, Login, HUD, Tags | 1.21.4 - 26.x");
   files.put("pack.mcmeta",meta.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
