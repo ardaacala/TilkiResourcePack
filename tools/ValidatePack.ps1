@@ -58,6 +58,8 @@ try {
   }
  }
  if(!$zip.GetEntry('assets/tilkiinterface/textures/font/mascot.png') -or !$zip.GetEntry('assets/tilkiinterface/textures/font/tab_logo.png')) { throw 'HUD or TAB logo missing' }
+ $meta=Read-Json $zip.GetEntry('pack.mcmeta')
+ if(@($meta.overlays.entries | Where-Object { $_.directory -eq 'tilki_icon_menu' -and $_.min_format -eq 88 }).Count -ne 1 -or !$zip.GetEntry('tilki_icon_menu/assets/tilkiinterface/textures/font/esc_menu/r1c1.png')) { throw '26.2+ ESC overlay missing' }
  if(!$zip.GetEntry('assets/tilkiinterface/textures/font/esc_menu/r0c0.png') -or $zip.GetEntry('assets/tilkiinterface/textures/font/esc_frame.png')) { throw 'Button-anchored ESC frame missing' }
  if($zip.GetEntry('assets/tilkiinterface/textures/font/esc_frame_bottom.png') -or ($zip.Entries.FullName | Where-Object { $_ -like 'assets/tilkiinterface/textures/font/tab_frame/*' })) { throw 'Rejected frame assets remain' }
  foreach($language in @('tr_tr','en_us','en_gb')) {
