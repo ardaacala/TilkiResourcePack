@@ -58,11 +58,11 @@ try {
   }
  }
  if(!$zip.GetEntry('assets/tilkiinterface/textures/font/mascot.png') -or !$zip.GetEntry('assets/tilkiinterface/textures/font/tab_logo.png')) { throw 'HUD or TAB logo missing' }
- if(!$zip.GetEntry('assets/tilkiinterface/textures/font/esc_frame.png')) { throw 'Responsive ESC frame missing' }
+ if(!$zip.GetEntry('assets/tilkiinterface/textures/font/esc_menu/r0c0.png') -or $zip.GetEntry('assets/tilkiinterface/textures/font/esc_frame.png')) { throw 'Button-anchored ESC frame missing' }
  if($zip.GetEntry('assets/tilkiinterface/textures/font/esc_frame_bottom.png') -or ($zip.Entries.FullName | Where-Object { $_ -like 'assets/tilkiinterface/textures/font/tab_frame/*' })) { throw 'Rejected frame assets remain' }
  foreach($language in @('tr_tr','en_us','en_gb')) {
   $translation=Read-Json $zip.GetEntry("assets/minecraft/lang/$language.json")
-  if($translation.'menu.game' -ne ([string][char]0xea03)) { throw "ESC frame translation missing: $language" }
+  if($translation.'menu.game' -ne '' -or !$translation.'menu.returnToGame'.StartsWith([string][char]0xea3e)) { throw "ESC frame translation missing: $language" }
  }
  if($zip.Entries.FullName | Where-Object { $_ -like 'assets/tilkiinterface/textures/font/hd/*' -or $_ -like 'assets/tilkiinterface/textures/font/sidebar_frame*' -or $_ -match 'assets/tilkiinterface/textures/font/tab_[0-9]' }) { throw 'Frame texture remains' }
  if($zip.Entries.FullName | Where-Object { $_ -like '*.ttf' -or $_ -like 'assets/tilkiinterface/font/text_*' }) { throw 'Legacy font files remain' }
@@ -71,4 +71,4 @@ $size=(Get-Item $path).Length
 if($size -gt 2MB) { throw "Combined pack grew beyond 2 MB: $size bytes" }
 $hash=(Get-FileHash $path -Algorithm SHA1).Hash.ToLowerInvariant()
 if(!([IO.File]::ReadAllText((Join-Path $root 'src/main/resources/config.yml'))).Contains($hash)) { throw 'Combined config SHA1 mismatch' }
-Write-Output "VALID: complete ASCII atlas, compact HD ESC frame, TAB logo, themed controls, no TTF, ZIP $size bytes and SHA1."
+Write-Output "VALID: complete ASCII atlas, button-anchored HD ESC frame, one-line rank badges, TAB logo, themed controls, no TTF, ZIP $size bytes and SHA1."

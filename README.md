@@ -4,13 +4,13 @@ Spigot 1.21.4 / Java 21 için CombatGuns, TilkiLoginScreen, TilkiInterface ve Ti
 
 ## Kurulum
 
-Sunucudaki eski TilkiResourcePack ve TilkiInterface JAR dosyalarını kaldırıp [v1.0.12](https://github.com/ardaacala/TilkiResourcePack/releases/tag/v1.0.12) ve [TilkiInterface v1.4.7](https://github.com/ardaacala/TilkiInterface/releases/tag/v1.4.7) JAR dosyalarını `plugins` klasörüne koyun. TilkiTags için v1.3.3 kullanın. CombatGuns ve TilkiLoginScreen kurulu kalır. Ayar klasörlerini koruyun. Resmî eski paket adresleri ve SHA1 değerleri açılışta güncellenir; özel adresler korunur.
+Sunucudaki eski TilkiResourcePack, TilkiInterface ve TilkiTags JAR dosyalarını kaldırıp [v1.0.13](https://github.com/ardaacala/TilkiResourcePack/releases/tag/v1.0.13), [TilkiInterface v1.4.8](https://github.com/ardaacala/TilkiInterface/releases/tag/v1.4.8) ve [TilkiTags v1.3.4](https://github.com/ardaacala/TilkiTags/releases/tag/v1.3.4) JAR dosyalarını `plugins` klasörüne koyun. CombatGuns ve TilkiLoginScreen kurulu kalır. Ayar klasörlerini koruyun. Resmî eski paket adresleri ve SHA1 değerleri açılışta güncellenir; özel adresler korunur.
 
-Birleşik ZIP yaklaşık 0,6 MB'dir. Normal yazıların ASCII karakterleri için deneme paketindeki `assets/minecraft/textures/font/ascii.png` kullanılır. Türkçe karakterler Minecraft 1.21.4'ün Latin Avrupa/Unifont fontlarından gelir. TTF font profilleri ve `/tilkipack font` komutu kaldırılmıştır. Giriş logosu, silahlar, rozetler, yüksek kaliteli ve kompakt ESC çerçevesi ile yazılardan uzak duran TAB logosu kalır. HUD çerçevesizdir ve üstünde küçük tilki başı bulunur. Seçenek ekranlarının kaydırıcı, onay kutusu ve metin alanları ahşap/turuncu temayı kullanır. Varsayılan ikinci paket gecikmesi 10 tick'tir.
+Birleşik ZIP yaklaşık 1,35 MB'dir. Normal yazıların ASCII karakterleri için deneme paketindeki `assets/minecraft/textures/font/ascii.png` kullanılır. Türkçe karakterler Minecraft 1.21.4'ün Latin Avrupa/Unifont fontlarından gelir. TTF font profilleri ve `/tilkipack font` komutu kaldırılmıştır. Giriş logosu, silahlar, rozetler, düğmelere bağlı HD ESC panosu ve yazılardan uzak duran TAB logosu kalır. HUD çerçevesizdir ve üstünde küçük tilki başı bulunur. Seçenek ekranlarının kaydırıcı, onay kutusu ve metin alanları ahşap/turuncu temayı kullanır. Varsayılan ikinci paket gecikmesi 10 tick'tir.
 
 HUD varsayılan Minecraft zeminini kullanır. TAB ekranı oyuncu yazılarının üstünde yalnızca TilkiCraft logosunu kullanır. `sidebar.enabled: false` ve `tab.enabled: false` ile paneller kapatılabilir.
 
-v1.0.12, büyütülmüş `tilki` etiketini ve `/tilkitags messagecolor <tag> ORANGE` özel Tilki turuncusunu içerir. Diğer rütbe görselleri korunur.
+v1.0.13 iki değişiklik içerir. Rütbe rozetleri referans rozet sayfasından birebir kesilir; Tilki dahil hepsi tam bir sohbet satırı (9 px) yüksekliğindedir ve satırlar üst üste binmez. ESC menüsü tilkili logo, fenerli ahşap pano, turuncu çerçeveli düğmeler ve `/discord` tabelasıyla kaplanır. Pano “Oyuna Dön” düğmesine bağlı olduğundan her GUI ölçeğinde düğmelerle birlikte konumlanır ve 240 GUI yüksekliğinde de ekrana sığar. Ayrıntılar TilkiTags 1.3.4 ve TilkiInterface 1.4.8 README dosyalarındadır.
 
 `/tilkipack reload` ayarları yeniden okur ve paketi tekrar gönderir. `/tilkiui reload` ve `/tilkitags reload` ortak paket etkinken ek indirme başlatmaz.
 
