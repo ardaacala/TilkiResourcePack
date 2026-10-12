@@ -14,7 +14,7 @@ try {
  $seen=@{}
  foreach($font in @('default','uniform')) {
   $definition=Read-Json $zip.GetEntry("assets/minecraft/font/$font.json")
-  if($definition.providers.Count -ne 4) { throw 'Missing merged module font reference' }
+  if($definition.providers.Count -ne 5) { throw 'Missing merged module font reference (four modules and auras)' }
   if($definition.providers | Where-Object {$_.id -like 'tilkiinterface:text_*'}) { throw 'Global font override remains' }
  }
  $asciiEntry=$zip.GetEntry('assets/minecraft/textures/font/ascii.png')
@@ -57,20 +57,21 @@ try {
    foreach($character in $characters) { if($seen.ContainsKey($character)) { throw "Overlapping glyph: $character" };$seen[$character]=$true }
   }
  }
- if(!$zip.GetEntry('assets/tilkiinterface/textures/font/mascot.png') -or !$zip.GetEntry('assets/tilkiinterface/textures/font/tab_logo.png')) { throw 'HUD or TAB logo missing' }
+ if(!$zip.GetEntry('assets/tilkiinterface/textures/font/sidebar_logo.png') -or !$zip.GetEntry('assets/tilkiinterface/textures/font/hud/crest.png')) { throw 'Sidebar logo or TAB crest missing' }
+ if(!$zip.GetEntry('assets/auracosmetics/font/effects.json') -or !$zip.GetEntry('assets/auracosmetics/textures/font/fox.png')) { throw 'Aura effect glyphs missing' }
  $meta=Read-Json $zip.GetEntry('pack.mcmeta')
- if(@($meta.overlays.entries | Where-Object { $_.directory -eq 'tilki_icon_menu' -and $_.min_format -eq 88 }).Count -ne 1 -or !$zip.GetEntry('tilki_icon_menu/assets/tilkiinterface/textures/font/esc_menu/r1c1.png')) { throw '26.2+ ESC overlay missing' }
+ if(@($meta.overlays.entries | Where-Object { $_.directory -eq 'tilki_icon_menu' -and $_.min_format -eq 88 }).Count -ne 1 -or !$zip.GetEntry('tilki_icon_menu/assets/tilkiinterface/textures/font/esc_menu/r0c0.png')) { throw '26.2+ ESC overlay missing' }
  if(!$zip.GetEntry('assets/tilkiinterface/textures/font/esc_menu/r0c0.png') -or $zip.GetEntry('assets/tilkiinterface/textures/font/esc_frame.png')) { throw 'Button-anchored ESC frame missing' }
  if($zip.GetEntry('assets/tilkiinterface/textures/font/esc_frame_bottom.png') -or ($zip.Entries.FullName | Where-Object { $_ -like 'assets/tilkiinterface/textures/font/tab_frame/*' })) { throw 'Rejected frame assets remain' }
  foreach($language in @('tr_tr','en_us','en_gb')) {
   $translation=Read-Json $zip.GetEntry("assets/minecraft/lang/$language.json")
   if($translation.'menu.game' -ne '' -or !$translation.'menu.returnToGame'.StartsWith([string][char]0xea3e)) { throw "ESC frame translation missing: $language" }
  }
- if($zip.Entries.FullName | Where-Object { $_ -like 'assets/tilkiinterface/textures/font/hd/*' -or $_ -like 'assets/tilkiinterface/textures/font/sidebar_frame*' -or $_ -match 'assets/tilkiinterface/textures/font/tab_[0-9]' }) { throw 'Frame texture remains' }
+ if($zip.Entries.FullName | Where-Object { $_ -like 'assets/tilkiinterface/textures/font/hd/*' -or $_ -match 'assets/tilkiinterface/textures/font/tab_[0-9]' }) { throw 'Frame texture remains' }
  if($zip.Entries.FullName | Where-Object { $_ -like '*.ttf' -or $_ -like 'assets/tilkiinterface/font/text_*' }) { throw 'Legacy font files remain' }
 } finally { $zip.Dispose() }
 $size=(Get-Item $path).Length
 if($size -gt 2MB) { throw "Combined pack grew beyond 2 MB: $size bytes" }
 $hash=(Get-FileHash $path -Algorithm SHA1).Hash.ToLowerInvariant()
 if(!([IO.File]::ReadAllText((Join-Path $root 'src/main/resources/config.yml'))).Contains($hash)) { throw 'Combined config SHA1 mismatch' }
-Write-Output "VALID: complete ASCII atlas, button-anchored HD ESC frame, one-line rank badges, TAB logo, themed controls, no TTF, ZIP $size bytes and SHA1."
+Write-Output "VALID: complete ASCII atlas, forest ESC frame, sidebar logo, TAB frame pieces, rank badges, aura glyphs, themed controls, no TTF, ZIP $size bytes and SHA1."

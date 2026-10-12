@@ -17,8 +17,17 @@ class BuildCombinedPack {
     } else { byte[] old=files.putIfAbsent(name,bytes);if(old!=null&&!Arrays.equals(old,bytes))throw new IllegalStateException("Conflicting asset: "+name); }
    }}
   }
+  // AuraCosmetics: only its own namespace. Its standalone pack also carries an old copy
+  // of the interface assets, which must not override the current TilkiInterface files.
+  Path aura=Path.of("../AuraCosmetics/resourcepack/assets/auracosmetics");
+  try(var walk=Files.walk(aura)) { for(Path file:walk.filter(Files::isRegularFile).toList()) {
+   String name="assets/auracosmetics/"+aura.relativize(file).toString().replace('\\','/');
+   if(files.putIfAbsent(name,Files.readAllBytes(file))!=null)throw new IllegalStateException("Conflicting asset: "+name);
+  }}
+  JsonObject auraReference=new JsonObject();auraReference.addProperty("type","reference");auraReference.addProperty("id","auracosmetics:effects");
+  for(String font:List.of("assets/minecraft/font/default.json","assets/minecraft/font/uniform.json"))fonts.computeIfAbsent(font,k->new JsonArray()).add(auraReference);
   for(var font:fonts.entrySet()) {
-   if(font.getValue().size()!=4)throw new IllegalStateException("Expected four module font references");
+   if(font.getValue().size()!=5)throw new IllegalStateException("Expected five module font references");
    JsonObject object=new JsonObject();object.add("providers",font.getValue());
    files.put(font.getKey(),object.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
   }
